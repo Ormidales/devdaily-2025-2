@@ -12,4 +12,5 @@ The aim of Dev Daily 2025-2 is to encourage consistent, daily coding practice an
 ## Setup and Usage
 To begin using the repository, simply clone or download it from GitHub. Navigate to the specific day’s folder to find the project files and an individual README detailing project requirements, functionality, and any relevant instructions. The structure is designed to allow you to work on a single project without interference from others, ensuring a focused development experience.
 
-License: This repository is distributed under the MIT License. For further details, please refer to the LICENSE file provided.
+## License
+This repository is distributed under the MIT License. For further details, please refer to the LICENSE file provided.
