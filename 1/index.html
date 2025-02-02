@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculatrice Avancée</title>
+    <!-- TailwindCSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Intégration de math.js pour une évaluation sécurisée des expressions -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/11.8.0/math.min.js"></script>
+    <!-- Intégration d'Algebrite pour le calcul symbolique -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/algebrite/1.5.0/algebrite.min.js"></script>
+</head>
+
+<body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col items-center justify-center">
+    <div class="container grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-5xl p-4">
+        <!-- Calculatrice (occupant 2/3 en md) -->
+        <div class="calculator bg-white shadow-lg rounded-lg p-4 md:col-span-2">
+            <input type="text" id="display" class="w-full h-12 text-2xl text-right p-2 border border-gray-300 rounded"
+                placeholder="0" disabled />
+            <div class="buttons mt-4 space-y-2">
+                <!-- Rangée des fonctions mémoire -->
+                <div class="grid grid-cols-4 gap-2">
+                    <button id="m-plus" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">M+</button>
+                    <button id="m-minus" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">M-</button>
+                    <button id="m-recall" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">MR</button>
+                    <button id="m-clear" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">MC</button>
+                </div>
+                <!-- Rangée des fonctions scientifiques -->
+                <div class="grid grid-cols-5 gap-2">
+                    <button data-value="log" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">log</button>
+                    <button data-value="ln" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">ln</button>
+                    <button data-value="exp" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">exp</button>
+                    <button data-value="!" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">!</button>
+                    <button data-value="∛" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">∛</button>
+                </div>
+                <!-- Rangée des fonctions avancées -->
+                <div class="grid grid-cols-4 gap-2">
+                    <button data-value="(" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">(</button>
+                    <button data-value=")" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">)</button>
+                    <button data-value="mod" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">mod</button>
+                    <button data-value="√" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">√</button>
+                </div>
+                <div class="grid grid-cols-4 gap-2">
+                    <button data-value="sin" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">sin</button>
+                    <button data-value="cos" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">cos</button>
+                    <button data-value="tan" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">tan</button>
+                    <button data-value="^" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">^</button>
+                </div>
+                <!-- Rangées standards -->
+                <div class="grid grid-cols-4 gap-2">
+                    <button data-value="7" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">7</button>
+                    <button data-value="8" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">8</button>
+                    <button data-value="9" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">9</button>
+                    <button data-value="/" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">÷</button>
+                </div>
+                <div class="grid grid-cols-4 gap-2">
+                    <button data-value="4" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">4</button>
+                    <button data-value="5" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">5</button>
+                    <button data-value="6" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">6</button>
+                    <button data-value="*" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">×</button>
+                </div>
+                <div class="grid grid-cols-4 gap-2">
+                    <button data-value="1" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">1</button>
+                    <button data-value="2" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">2</button>
+                    <button data-value="3" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">3</button>
+                    <button data-value="-" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">-</button>
+                </div>
+                <div class="grid grid-cols-4 gap-2">
+                    <button data-value="0" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">0</button>
+                    <button data-value="." class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">.</button>
+                    <button id="clear" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">C</button>
+                    <button data-value="+" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">+</button>
+                </div>
+                <!-- Rangée Undo/Redo -->
+                <div class="grid grid-cols-2 gap-2">
+                    <button id="undo" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">Undo</button>
+                    <button id="redo" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">Redo</button>
+                </div>
+                <!-- Rangée des fonctions avancées supplémentaires -->
+                <div class="grid grid-cols-4 gap-2">
+                    <button data-value="sinh(" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">sinh</button>
+                    <button data-value="cosh(" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">cosh</button>
+                    <button data-value="tanh(" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">tanh</button>
+                    <button data-value="i" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">i</button>
+                </div>
+                <div class="grid grid-cols-4 gap-2">
+                    <button data-value="asinh(" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">asinh</button>
+                    <button data-value="acosh(" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">acosh</button>
+                    <button data-value="atanh(" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">atanh</button>
+                    <button data-value="[[" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">Matrice</button>
+                </div>
+                <div class="grid grid-cols-4 gap-2">
+                    <!-- Boutons pour le calcul différentiel, intégral et résolution d'équations -->
+                    <button id="derivative"
+                        class="btn bg-blue-500 hover:bg-blue-600 rounded p-2 text-white">d/dx</button>
+                    <button id="integral" class="btn bg-blue-500 hover:bg-blue-600 rounded p-2 text-white">∫</button>
+                    <button id="solve"
+                        class="btn bg-blue-500 hover:bg-blue-600 rounded p-2 text-white">Résoudre</button>
+                    <button data-value="," class="btn bg-gray-200 hover:bg-gray-300 rounded p-2">,</button>
+                </div>
+                <div>
+                    <button id="equals" class="btn bg-green-500 text-white rounded p-2 w-full mt-2">=</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Panneau de droite regroupant l'historique (75%) et les réglages (25%) -->
+        <div class="flex flex-col h-full md:col-span-1 space-y-4">
+            <div class="history flex-[3] bg-white shadow-lg rounded-lg p-4 overflow-y-auto">
+                <h2 class="text-xl font-semibold text-center mb-2">Historique des calculs</h2>
+                <button id="clear-history" class="btn bg-gray-200 hover:bg-gray-300 rounded p-2 w-full mb-2">Effacer
+                    l’historique</button>
+                <ul id="history-list" class="space-y-1"></ul>
+            </div>
+            <div class="settings-panel flex-[1] bg-white shadow-lg rounded-lg p-4">
+                <h2 class="text-xl font-semibold text-center mb-4">Réglages avancés</h2>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <label for="number-format" class="text-sm font-medium">Format d'affichage :</label>
+                        <select id="number-format" class="border border-gray-300 rounded p-1">
+                            <option value="standard">Standard</option>
+                            <option value="fixed">Fixed (2 décimales)</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <label for="angle-mode" class="text-sm font-medium">Angle :</label>
+                        <select id="angle-mode" class="border border-gray-300 rounded p-1">
+                            <option value="radians">Radians</option>
+                            <option value="degrees">Degrees</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="index.js"></script>
+</body>
+
+</html>
