@@ -3,30 +3,24 @@ document.addEventListener('DOMContentLoaded', function () {
     const buttons = document.querySelectorAll('.buttons button');
     const historyList = document.getElementById('history-list');
 
-    // Boutons Undo/Redo et Clear History
     const undoButton = document.getElementById('undo');
     const redoButton = document.getElementById('redo');
     const clearHistoryButton = document.getElementById('clear-history');
 
-    // Panneau de réglages
     const numberFormatSelect = document.getElementById('number-format');
-    // Récupération du select pour le mode angle
     const angleModeSelect = document.getElementById('angle-mode');
 
-    // Variables pour la mémoire, Undo/Redo, historique
     let memory = 0;
     let undoStack = [];
     let redoStack = [];
     let calcHistory = [];
 
-    // Sauvegarde dans localStorage
     function saveState() {
         localStorage.setItem('calcMemory', memory);
         localStorage.setItem('calcHistory', JSON.stringify(calcHistory));
         localStorage.setItem('calcNumberFormat', numberFormatSelect.value);
     }
 
-    // Chargement du state
     function loadState() {
         const storedMemory = localStorage.getItem('calcMemory');
         if (storedMemory !== null) {
@@ -51,7 +45,6 @@ document.addEventListener('DOMContentLoaded', function () {
         redoStack = [];
     }
 
-    // Création d'un élément d'historique
     function createHistoryItem(expr, res) {
         const li = document.createElement('li');
         li.textContent = expr + " = " + res;
@@ -80,8 +73,7 @@ document.addEventListener('DOMContentLoaded', function () {
         saveState();
     });
 
-    // Gestion du mode angle via le select
-    let angleMode = angleModeSelect.value; // initialisé par la valeur du select
+    let angleMode = angleModeSelect.value;
     function updateTrigFunctions() {
         if (angleMode === 'degrees') {
             math.import({
@@ -103,11 +95,9 @@ document.addEventListener('DOMContentLoaded', function () {
         updateTrigFunctions();
     });
 
-    // Gestion des boutons de la calculatrice
     buttons.forEach(button => {
         button.addEventListener('click', function () {
             const value = this.getAttribute('data-value');
-            // Les boutons spéciaux (clear, equals, mémoire, undo/redo) sont gérés séparément
             if (this.id === 'clear') {
                 pushUndoState();
                 display.value = '';
@@ -127,7 +117,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    // Boutons mémoire
     const mPlusButton = document.getElementById('m-plus');
     const mMinusButton = document.getElementById('m-minus');
     const mRecallButton = document.getElementById('m-recall');
@@ -160,7 +149,6 @@ document.addEventListener('DOMContentLoaded', function () {
         saveState();
     });
 
-    // Clear History
     clearHistoryButton.addEventListener('click', function () {
         calcHistory = [];
         localStorage.removeItem('calcHistory');
@@ -175,7 +163,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Undo / Redo
     undoButton.addEventListener('click', function () {
         if (undoStack.length > 0) {
             redoStack.push(display.value);
@@ -189,7 +176,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Gestion du clavier
     document.addEventListener('keydown', function (event) {
         const key = event.key;
         if ((key >= '0' && key <= '9') || key === '.' || key === '+' || key === '-' ||
@@ -211,7 +197,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Fonction de calcul standard
     function calculate() {
         try {
             const originalExpression = display.value;
@@ -232,11 +217,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // ===============================
-    // Fonctions avancées supplémentaires
-    // ===============================
-
-    // Dérivation : calcul de la dérivée de l'expression par rapport à x
     const derivativeButton = document.getElementById('derivative');
     derivativeButton.addEventListener('click', function () {
         let expr = display.value;
@@ -249,7 +229,6 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Intégration symbolique via Algebrite (intégrale indéfinie par rapport à x)
     const integralButton = document.getElementById('integral');
     integralButton.addEventListener('click', function () {
         let expr = display.value;
@@ -262,13 +241,12 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    // Résolution d'équations : on attend que l'expression contienne un "=" (ex: "x^2-4=0")
     const solveButton = document.getElementById('solve');
     solveButton.addEventListener('click', function () {
         let eq = display.value;
         try {
             if (!eq.includes("=")) {
-                throw new Error("L'équation doit contenir '='");
+                throw new Error("The equation must contain an equals sign");
             }
             let sides = eq.split("=");
             let left = sides[0];
